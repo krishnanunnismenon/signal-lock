@@ -1,0 +1,223 @@
+{
+  "title": "Signal Lock — choose its world",
+  "question": "Each direction supports the same round rules, simulated audience, and three knobs. Choose the world you want to play in.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Pocket theatre",
+      "kicker": "THE ROLL",
+      "lineage": "Puppet rehearsal stages and theatre cue sheets",
+      "thesis": "The audience casts a character; your knobs bring its double onto the stage.",
+      "palette": [
+        "#24231F",
+        "#F2E8D5",
+        "#F16B46",
+        "#AED8B6"
+      ],
+      "materials": [
+        "matte articulated figures",
+        "ink stage and cream cue strip"
+      ],
+      "viewport": "A huge paired character stage above three tactile controls; a cue strip makes open, restricted and frozen phases visible.",
+      "risk": "The stage must stay spacious without hiding votes or making controls theatrical props.",
+      "raised": [
+        {
+          "from": "Miura sheet",
+          "raise": "One phase change coordinates the whole stage; panels never animate independently."
+        },
+        {
+          "from": "Cloud edge",
+          "raise": "Movement stays confined to changing state so the reading field remains quiet."
+        },
+        {
+          "from": "HyperCard",
+          "raise": "The message inspector opens in place and returns to the same round."
+        },
+        {
+          "from": "Split-flap board",
+          "raise": "Labels keep fixed positions so changing votes remain easy to compare."
+        },
+        {
+          "from": "Game Boy",
+          "raise": "Every mascot reads as a distinct silhouette at phone size."
+        }
+      ],
+      "comp": ".impeccable/mocks/decision/theatre.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Character press",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Screen-print workshops and interchangeable toy moulds",
+      "thesis": "Three ingredients stamp a living mascot into a bold colour-block playfield.",
+      "palette": [
+        "#F5E84A",
+        "#254DDD",
+        "#F6F1E4",
+        "#EF583B"
+      ],
+      "materials": [
+        "flat printed colour",
+        "chunky moulded toy figures"
+      ],
+      "viewport": "A blue character assembly field fills the left, a huge timer and vote strips sit right, and cream knobs run across the bottom.",
+      "risk": "Playful toy interfaces are familiar; the composition and transitions must carry the originality.",
+      "comp": ".impeccable/mocks/decision/press.png"
+    },
+    {
+      "id": "hardware",
+      "label": "The desk instrument",
+      "kicker": "QUALITY BAR",
+      "verdict": "competitive",
+      "lineage": "Creator-hardware desk instruments",
+      "thesis": "A playable tabletop console where every vote and turn has a physical response.",
+      "palette": [
+        "#333735",
+        "#DDD8CC",
+        "#F1EBDC",
+        "#EB5E25",
+        "#EDB45A"
+      ],
+      "materials": [
+        "putty keycaps",
+        "gunmetal chassis",
+        "knurled knobs"
+      ],
+      "viewport": "A single instrument fills the screen: a full-colour target window, voting meters, and three oversized detented knobs.",
+      "risk": "Hardware styling can become dense; the mascot must stay colourful and readable.",
+      "case": "Stronger control clarity; the theatre carries the shared classroom performance more naturally.",
+      "hero": "https://impeccable.style/worlds/cards/design-canon-creator-hardware-bench-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/design-canon-creator-hardware-bench.webp",
+      "comp": ".impeccable/mocks/decision/hardware.png"
+    },
+    {
+      "id": "miura",
+      "label": "Unfolding sheet",
+      "verdict": "declined",
+      "thesis": "Votes unfold a linked character assembly.",
+      "palette": [
+        "#FAF8EF",
+        "#BF973F",
+        "#212323"
+      ],
+      "materials": [
+        "folded white sheet",
+        "gold face"
+      ],
+      "viewport": "Linked folded cells reveal target and controls.",
+      "risk": "Crease geometry competes with quick animal recognition.",
+      "case": "Weaker classroom identification and slower target reading.",
+      "kept": "A single coordinated transition grammar.",
+      "hero": "https://impeccable.style/worlds/cards/paper-folds-pleats-deployable-miura-orbit-sheet-hero.webp"
+    },
+    {
+      "id": "cloud",
+      "label": "Spectral edge",
+      "verdict": "declined",
+      "thesis": "Votes change a narrow band around an otherwise quiet playfield.",
+      "palette": [
+        "#FFFFFF",
+        "#5A6670",
+        "#AFD8BE",
+        "#DDB8CF"
+      ],
+      "materials": [
+        "white field",
+        "spectral edge"
+      ],
+      "viewport": "Characters sit in a quiet white field with spectral state edges.",
+      "risk": "Delicate colour is a poor carrier for projector-visible game urgency.",
+      "case": "Less connected to collaborative play and weaker phase visibility.",
+      "kept": "Keep motion local to state changes.",
+      "hero": "https://impeccable.style/worlds/cards/clouds-storms-auroras-iridescent-cloud-edge-hero.webp"
+    },
+    {
+      "id": "hypercard",
+      "label": "Painted card stack",
+      "verdict": "declined",
+      "thesis": "Editable game cards expose the machinery of play.",
+      "palette": [
+        "#FFFFFF",
+        "#000000"
+      ],
+      "materials": [
+        "one-bit paint",
+        "pixel buttons"
+      ],
+      "viewport": "A fixed card holds characters, controls and an editable message panel.",
+      "risk": "A strictly monochrome world cannot show the game's four colours faithfully.",
+      "case": "Colour is a core game fact; this system obscures it.",
+      "kept": "Inspect in place without losing context.",
+      "hero": "https://impeccable.style/worlds/cards/medium-native-hypercard-stack-shoebox-hero.webp"
+    },
+    {
+      "id": "concourse",
+      "label": "Departure board",
+      "verdict": "declined",
+      "thesis": "Targets arrive as synchronized rows of flipping choices.",
+      "palette": [
+        "#191B19",
+        "#F6F2E9",
+        "#E6A647"
+      ],
+      "materials": [
+        "matte flaps",
+        "steel frame"
+      ],
+      "viewport": "Animal, colour and accessory update in aligned departure rows.",
+      "risk": "Text-first cells weaken composite mascot recognition and crowd the controls.",
+      "case": "Less immediate than characters for this audience and this matching task.",
+      "kept": "Stable labels during live changes.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-split-flap-concourse-hero.webp"
+    },
+    {
+      "id": "gameboy",
+      "label": "Four-shade handheld",
+      "verdict": "declined",
+      "thesis": "The round becomes a miniature sprite-matching game.",
+      "palette": [
+        "#9BBC0F",
+        "#8BAC0F",
+        "#306230",
+        "#0F380F"
+      ],
+      "materials": [
+        "integer-scaled pixels",
+        "four greens"
+      ],
+      "viewport": "A compact sprite field uses two buttons and a directional pad.",
+      "risk": "Four greens hide the red, blue, green and yellow distinction; two buttons conflict with three knobs.",
+      "case": "The strict palette and controls distort game facts.",
+      "kept": "Recognizable silhouettes at small sizes.",
+      "hero": "https://impeccable.style/worlds/cards/digital-design-canon-gameboy-four-shade-field-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": [
+      "safer",
+      "bolder"
+    ]
+  },
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "Classic game screen",
+    "thesis": "A familiar quiz-game layout with a target, timer, score and control panels.",
+    "palette": [
+      "#F5F6FA",
+      "#222635",
+      "#4162E4"
+    ],
+    "materials": [
+      "flat panels",
+      "clean typography"
+    ],
+    "viewport": "A centered target above three equal control panels and a simple scoreboard.",
+    "risk": "Clear and familiar, but less distinctive.",
+    "comp": ".impeccable/mocks/decision/classic.png"
+  },
+  "steer": true
+}
