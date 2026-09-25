@@ -333,6 +333,20 @@
       "description": "Illustrative twenty-vote specimen; application widths come from live tallies.",
       "html": "<div class=\"ds-vote\"><strong>Colour</strong><div class=\"ds-bar\" role=\"img\" aria-label=\"Red 8, blue 6, green 4, yellow 2 votes\"><span></span><span></span><span></span><span></span></div><div class=\"ds-leader\"><span>Red</span><span>8/20</span></div></div>",
       "css": ".ds-vote{font-family:\"Archivo Variable\",sans-serif;background:var(--yellow,#f5e84a);color:var(--ink,#16211e);padding:12px;width:250px;font-size:12px}.ds-vote>strong{display:block;text-transform:uppercase;font-weight:850;margin-bottom:4px}.ds-bar{height:12px;display:flex;overflow:hidden;background:var(--ink,#16211e);outline:1px solid #a59d35;outline-offset:-1px}.ds-bar>span{box-shadow:inset -1px 0 #f5e84a}.ds-bar>span:nth-child(1){width:40%;background:#ed6148}.ds-bar>span:nth-child(2){width:30%;background:#57bcea}.ds-bar>span:nth-child(3){width:20%;background:#83c35b}.ds-bar>span:nth-child(4){width:10%;background:#f2cd42}.ds-leader{display:flex;justify-content:space-between;margin-top:3px;font-weight:600}"
+    },
+    {
+      "name": "Workshop vote pad",
+      "kind": "button",
+      "description": "Selected phone pad with an illustrative tally; live voting and counts are supplied by the application.",
+      "html": "<button class=\"ds-workshop-vote ds-chosen\" aria-pressed=\"true\"><span class=\"ds-option\">Fox</span><span class=\"ds-count\">8<small>/20</small><span>Your vote</span></span><span class=\"ds-track\"><span style=\"transform:scaleX(.4)\"></span></span></button>",
+      "css": ".ds-workshop-vote{position:relative;min-height:96px;width:170px;border:1px solid var(--ink,#16211e);border-radius:4px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:10px;padding:14px 13px 18px;background:transparent;color:var(--ink,#16211e);text-align:left;overflow:hidden;cursor:pointer;font-family:\"Archivo Variable\",sans-serif}.ds-workshop-vote:hover:not(:disabled){background:#e6e1cc}.ds-workshop-vote:focus-visible{outline:3px solid var(--orange,#f26940);outline-offset:5px}.ds-workshop-vote:disabled{opacity:1;cursor:default}.ds-workshop-vote.ds-chosen{background:var(--ink,#16211e);color:var(--cream,#f5f0df)}.ds-workshop-vote.ds-chosen:hover:not(:disabled){background:#344033}.ds-option{font-family:\"Barlow Condensed\",sans-serif;font-size:27px;font-weight:800;line-height:1}.ds-count{font-weight:850;font-size:17px;display:flex;align-items:baseline}.ds-count>small{font-size:10px;font-weight:500}.ds-count>span{font-size:9px;margin-left:auto;font-weight:650}.ds-track{position:absolute;bottom:0;left:0;right:0;height:5px;background:#a7aa9266}.ds-track>span{display:block;position:absolute;inset:0;background:var(--blue,#244ee8);transform-origin:left}.ds-chosen .ds-track>span{background:var(--yellow,#f5e84a)}"
+    },
+    {
+      "name": "Pair rank badge",
+      "kind": "custom",
+      "description": "First-place badge; every tied rank 1 receives this same yellow emphasis.",
+      "html": "<div class=\"ds-rank-row\" data-rank=\"1\"><span class=\"ds-rank\" aria-label=\"Rank 1\">01</span></div>",
+      "css": ".ds-rank{font-family:\"Barlow Condensed\",sans-serif;font-size:44px;font-weight:800;line-height:1;width:65px;height:65px;display:grid;place-items:center;border:1px solid var(--ink,#16211e);border-radius:50%;color:var(--ink,#16211e)}.ds-rank-row[data-rank=\"1\"] .ds-rank{background:var(--yellow,#f5e84a)}@media(max-width:700px){.ds-rank{width:44px;height:44px;font-size:30px}}"
     }
   ],
   "narrative": {

@@ -79,6 +79,10 @@ export class GameEngine {
     autoLoop: true,
     bots: true,
   };
+  // Claimed slots remain human across rounds; bots never overwrite them.
+  humanSlots = new Set<string>();
+  forcedVoters = new Map<Category, number>();
+  roundLimit: number | null = null;
   private eventId = 0;
   constructor(private random = Math.random) {
     this.seedTeams();
@@ -99,7 +103,11 @@ export class GameEngine {
       const voters = Array.from({ length: 20 }, (_, id) => ({
         id,
         choice:
-          this.random() < 0.38 ? favourite : Math.floor(this.random() * 4),
+          this.humanSlots.has(`${category}:${id}`) && this.teams[category]
+            ? this.teams[category].voters[id].choice
+            : this.random() < 0.38
+              ? favourite
+              : Math.floor(this.random() * 4),
         selected: false,
       }));
       this.teams[category] = {
@@ -142,6 +150,9 @@ export class GameEngine {
             this.target[category],
             this.random,
           );
+          const forced = this.forcedVoters.get(category);
+          if (forced !== undefined && !selection.ids.includes(forced))
+            selection.ids[0] = forced;
           team.voters.forEach(
             (v) => (v.selected = selection.ids.includes(v.id)),
           );
@@ -186,7 +197,11 @@ export class GameEngine {
           boundary,
         );
       } else if (this.phase === "result") {
-        if (this.settings.autoLoop) this.begin(boundary);
+        if (
+          this.settings.autoLoop &&
+          (this.roundLimit === null || this.round < this.roundLimit)
+        )
+          this.begin(boundary);
         else {
           this.phase = "idle";
           this.deadline = null;
@@ -202,8 +217,11 @@ export class GameEngine {
       for (const category of CATEGORIES) {
         const team = this.teams[category];
         const candidates = team.voters.filter(
-          (v) => this.phase === "open" || v.selected,
+          (v) =>
+            !this.humanSlots.has(`${category}:${v.id}`) &&
+            (this.phase === "open" || v.selected),
         );
+        if (!candidates.length) continue;
         // Small bursts model independent audience revisions. Never synthesize a vote weight.
         const count = this.phase === "open" ? 2 : 1;
         for (let i = 0; i < count; i++) {
@@ -227,7 +245,13 @@ export class GameEngine {
     this.recount(category);
     this.emit(
       "vote.replaced",
-      { category, voterId: id, previous, choice, simulated: true },
+      {
+        category,
+        voterId: id,
+        previous,
+        choice,
+        simulated: !this.humanSlots.has(`${category}:${id}`),
+      },
       now,
     );
   }

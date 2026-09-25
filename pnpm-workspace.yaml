@@ -1,0 +1,8 @@
+# Native helpers used by Vite/tsx and macOS file watching.
+allowBuilds:
+  esbuild: true
+  fsevents: true
+
+# Preserve the exact Prettier version already installed before the migration.
+minimumReleaseAgeExclude:
+  - prettier@3.9.9

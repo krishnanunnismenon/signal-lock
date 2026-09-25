@@ -1,54 +1,88 @@
 # Signal Lock
 
-A playable solo rehearsal of the classroom matching game. Built with React, Vite, TypeScript, Three.js, GSAP, and a local Node.js WebSocket server.
+A classroom matching game with participant phones, operator/caller turns, a pair leaderboard, and a full laptop rehearsal. React, Vite, TypeScript, Three.js, GSAP, and a local Node.js WebSocket server.
 
 ## Run
 
-Requires Node.js 22.12+ (developed with Node 26).
+Requires Node.js 22.12+ (developed with Node 26) and pnpm 11.3.0. The package manager version is pinned in `package.json`.
+
+Install pnpm using the [official setup instructions](https://pnpm.io/installation) if it is not already available.
 
 ```sh
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-Open http://127.0.0.1:5173. Keep the terminal running. The local game server uses port 3107; Vite uses 5173.
+Use `pnpm install --frozen-lockfile` for a reproducible install. Commit `pnpm-lock.yaml` when dependencies change.
+
+Open **http://127.0.0.1:5173/** on the laptop. Keep the terminal running. The host screen is available only from the laptop's loopback address; participants and the operator use the links it creates.
 
 ```sh
-npm test
-npm run build
-npm start
+pnpm test
+pnpm build
+pnpm start
 ```
 
-`npm start` serves the built game at http://127.0.0.1:3107. Both servers bind to the laptop loopback interface. This first prototype does not expose a public or LAN join service.
+The built version runs at **http://127.0.0.1:3107/**. Development uses ports 5173 (page) and 3107 (game); production uses 3107 for both. Both development and production support local-network phones. Public internet hosting is not configured.
 
-## Play
+## Rehearse without an audience
 
-- Start a round; Space pauses/resumes when focus is outside a button or form.
-- Animal: A/D. Colour: J/L. Accessory: Left/Right arrows.
-- Click the arrow buttons or drag a knob vertically. A focused knob also supports arrow keys.
-- All 60 simulated participants have one current vote in a team of 20. Changing it replaces the prior vote.
-- Default loop: 12 seconds open voting, 4 seconds restricted voting, 4 seconds frozen target, score 0–3, 3 seconds result, next round.
-- During restricted voting, five voters per team can revise their votes. All other votes remain counted. The server selects uniformly among five-person subsets capable of overturning the current result if those voters coordinate. This creates an opportunity, not a guaranteed swing. If no subset can overturn the majority, any five are selected randomly.
-- Ties retain the current leader when tied; otherwise the first tied category option wins.
-- Operator choices are sampled at the deadline. A late command cannot alter a scored result. Pausing preserves remaining time.
+1. Open **Bring the crowd → Preview on laptop** for any team.
+2. Enter a nickname. This participant claims one of that team's 20 places; the other 19 remain simulated.
+3. Close the preview and set the session rules before starting: five rounds by default, or a custom 1–20, and 4–60 seconds of open voting. The four-second restricted and four-second frozen phases stay fixed.
+4. Add an operator and a caller under **Run the game**. Start their turn.
+5. Reopen the participant preview to vote. Use **Open operator screen** in another tab to turn the knobs. The host/caller view shows the target; the operator view hides it.
+6. In rehearsal mode, **Put in the five** reserves one tester per category for the next restricted phases. **Remove reservation** restores normal random selection. This override is labelled on the participant screen and unavailable in workshop mode.
+7. After all rounds, the pair enters the leaderboard and the game waits for the next pair. Add names and start another turn to continue.
 
-Messages opens the structured event stream and voter inspector. It can send manual simulated votes, including ineligible votes to observe rejection. Pause and disable automatic simulated voting for controlled experiments. Settings change open/result durations and looping; new durations apply when the corresponding phase next starts.
+**Solo sandbox** (`/solo`) keeps the original independent, target-visible playground, with its own endless loop and message inspector. It does not affect the workshop leaderboard.
+
+## Join from a real phone
+
+Keep the laptop and phone on the same Wi-Fi. In **Bring the crowd**, select the laptop's Wi-Fi address and show each physical group its QR code: Animal, Colour, or Accessory. Scanning assigns the category; the participant enters a nickname without an account. A generic `/join` page also accepts the displayed room code and a team choice.
+
+The optional operator QR/link opens only the operator's controls. The caller/projector link shows the target and has a leaderboard switch. Keep the operator looking at their own screen.
+
+If scanning opens an unreachable page, check that the selected address belongs to the Wi-Fi network rather than a VPN, and that the network permits devices to connect to one another. Guest/campus network isolation or an OS firewall can prevent LAN access. The laptop preview works independently of those restrictions. Changing network addresses requires restarting the server and using the newly generated room codes.
+
+## Rules and scoring
+
+- Each category has 20 equally weighted votes. A human claims a simulated slot; joining never adds extra voting weight. Changing a vote replaces the previous choice.
+- Default round: **12 seconds open → 4 seconds for five selected voters → 4 seconds frozen → 3 seconds result**. Operator controls remain active during the frozen phase.
+- The server randomly selects among five-person subsets capable of overturning the current leader. Selection creates an opportunity, not a guaranteed swing. If no five-person subset can overturn it, the server selects any five randomly. All other votes remain counted.
+- Ties retain the incumbent leader; otherwise the first tied option wins.
+- At the deadline, each matching animal, colour, or accessory earns one point: 0–3 per round. Late messages cannot change a scored result.
+- **Only operator/caller pairs are ranked.** The round count applies to every pair and locks when the first turn starts. Totals across completed turns determine rank; equal totals share a competition rank (for example, 1, 1, 3). In-progress pairs appear separately.
+- Existing human votes carry into the next round and are labelled as carried votes until confirmed or changed. Bots never alter a claimed human slot.
+- Pausing freezes the clock and all controls. If a phone disconnects, its vote and place remain; the rest of the round continues. Reopening the same team link in the same browser restores the identity. The host may release stale places.
+
+## Controls and screens
+
+- `/`: laptop host, session rules, pairs, audience, previews, QR codes, standings.
+- `/join?room=…&team=…`: participant joining, live vote split, full target, voting and standings.
+- `/operator?key=…`: operator's own character and three controls; no target in its network payload.
+- `/display?room=…`: caller/projector target and standings.
+- `/solo`: independent original rehearsal and teaching messages.
+
+On operator and solo screens, use A/D for Animal, J/L for Colour, and Left/Right for Accessory when focus is outside a control. You can also drag knobs, use their step buttons, or use arrow keys on a focused knob. Space starts/pauses the solo sandbox; workshop pause belongs to the host.
 
 ## Scope and limits
 
-This is an explicitly labelled solo rehearsal: the target and operator selection are both visible on one screen. There is no target-blind operator route yet. No physical device is connected. Browser phones, three category QR codes, instructor permissions, real participant identities, and ESP32 integration are later milestones. Game state is held in memory and resets when the server restarts. Browser refresh reconnects to the running game. If a browser loses its connection, controls disable and reconnect automatically; the server can continue the round.
+Session data is **in memory**. Restarting the game server clears participants, pair scores, keys, and the room code. A browser refresh does not clear the running session. Export/storage across server restarts, public hosting, physical encoders, and failure exercises are not implemented.
 
-Three.js renders the interactive toy figures on demand, with capped pixel density and short GSAP assembly transitions. Labels and controls remain semantic HTML. Reduced-motion preference removes travel. If WebGL initialization fails, the attribute labels still communicate the target and selections. Responsive browser checks are not a hardware performance benchmark on physical phones.
+The phone flow is real multiplayer transport with simulated fill, not a collection of static mockups. Host controls require a server-issued host credential obtainable only from the laptop; participants can change only their own vote. Operator payloads omit the target, tallies, vote events, and result combinations. Pair names and scores are shared room content. The local join and operator links are intended for the workshop, not public distribution.
 
-## Structure
+Three.js renders on demand, caps pixel density, and uses short GSAP transitions. HTML labels survive WebGL failure; reduced-motion preference removes travel. Browser checks at phone widths are not a physical-device or classroom Wi-Fi load benchmark.
 
-- `server/engine.ts`: deterministic phase, vote, selection, scoring and message logic.
-- `server/index.ts`: local authority and WebSocket transport.
-- `shared/game.ts`: categories and message contracts.
-- `src/App.tsx`: rehearsal, controls and teaching inspector.
-- `src/MascotScene.tsx`: procedural interactive character models.
-- `server/engine.test.ts`: rule and deadline tests.
+## Verification and structure
 
-The chosen visual direction is Character press. The approved image preview and its prompt are recorded under `.impeccable/mocks/decision/`; those images are design references and are not downloaded by the application.
+The test suite covers selection, frozen deadlines, pause, stale rounds and pairs, fixed turn length, custom rules, tied rankings, participant slots, role restrictions, target redaction, and released identities. Live transport checks additionally exercised joining, authentication, LAN host denial, and revocation. Browser checks covered voting receipts, the selected-five phase, frozen controls, full pair turns, rankings, refresh/rejoin, and operator controls.
 
-`DESIGN.md` records the implemented colours, typography, layout, and component rules. `.impeccable/design.json` supplies the matching component preview definitions.
+- `server/engine.ts`: authoritative round and vote rules.
+- `server/room.ts`: participant identities, pair turns, leaderboard and role projections.
+- `server/index.ts`: HTTP join, role-authenticated WebSockets and built-page serving.
+- `shared/game.ts`, `shared/room.ts`: shared contracts.
+- `src/Workshop.tsx`, `src/useRoom.ts`: participant, host, operator and projector flows.
+- `src/MascotScene.tsx`: procedural characters; `src/App.tsx`: original solo sandbox.
+
+The approved visual system is **Character press**. `DESIGN.md` and `.impeccable/design.json` record that identity; `.impeccable/briefs/mobile.md` records this extension. Reference PNGs under `.impeccable/mocks/decision/` do not ship in the application. QR graphics are generated locally from the actual join URLs.

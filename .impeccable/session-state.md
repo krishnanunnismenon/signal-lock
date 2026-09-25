@@ -1,11 +1,11 @@
-# Character press implemented
+# Workshop mobile milestone complete
 
-The user explicitly approved Impeccable’s pick, Character press. Approved reference: `.impeccable/mocks/decision/press.png`; approval recorded in adjacent JSON. Seed ee0edab4. Do not reopen direction selection.
+2026-09-24: user approved the mobile/host build brief. Character press remains the approved identity (seed ee0edab4); no direction selection should be reopened.
 
-Playable solo prototype at http://127.0.0.1:5173/ with local WebSocket authority on port 3107. React + Vite + Three.js + GSAP, simulated 60 voters and three controls. PRODUCT.md and README.md record rules, defaults, and prototype limits.
+Implemented: / host, /join participant, /operator private selection, /display caller/projector, /solo independent original sandbox. Three QR category links and laptop previews; nickname identities claim a simulated slot; retained votes and reconnect; live tallies/full target; selected-five and frozen states; only pair leaderboard, five/default custom 1–20, equal rounds and shared tied ranks. Host adds/starts pairs, configures before the first turn, pauses, releases members, reserves a tester among five in labelled rehearsal.
 
-Seven engine tests, production build, WebSocket rejection checks, and desktop/mobile browser interactions passed. Captures in `.impeccable/review/`: desktop and hero-repro 1280×889, user-1280 1280×720, mobile 390×844. The same-aspect desktop size substitutes for the approved preview’s 1505×1045 because the screenshot surface clips larger widths.
+All 13 engine/room tests passed. Live HTTP/WebSocket tests passed for joining, auth, role denials, operator payload redaction, local-only host credential and token revocation. Production direct routes and join tested on temporary port 3110 server, then stopped. Browser checks cover live voting/ack, five-phase vote, frozen disabled controls, five-round completion, pair rotation, standings, reload, release/rejoin, operator step. Physical phones and classroom-scale network load are not verified.
 
-Initial independent finish review requested five fixes. All implemented: condensed Barlow display, larger character silhouettes, central comparison arrow, stronger score/vote hierarchy, and contained Start button. The reviewer scored all five fixes resolved, followed by two spacing regressions also resolved. Final disposition: ship at the scored-fixes scope. DESIGN.md and .impeccable/design.json now document the finished source. Prototype complete and ready to play.
+Evidence: .impeccable/review/mobile-flow/. Final reviewer disposition ship at the one scored fix scope: tied rank-1 badges now all have identical yellow emphasis. Detector ran once on workshop files; zero non-advisory findings, 125 advisory colour/type-ramp findings. No shipping artwork rasters; QR codes generated at runtime. Existing DESIGN.md and sidecar preserved with short extension documentation.
 
-Impeccable context and detector already ran once; do not repeat. Detector findings addressed. All reference PNGs have prompt provenance. No shipping raster assets; interactive characters use Three.js geometry. Browser checks establish responsive behavior, not physical-phone performance.
+Do not rerun context or detector as cleanup. Current dev server http://127.0.0.1:5173 with backend on 3107 listens on LAN for phone joins. Session data held in memory; server restarted to remove agent-created rehearsal records and restore defaults before handoff. Use current UI QR codes, not codes in old screenshots.

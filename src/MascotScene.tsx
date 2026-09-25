@@ -310,6 +310,7 @@ function dispose(group: THREE.Object3D) {
 }
 
 interface Props {
+  single?: boolean;
   target: Combination;
   selection: Combination;
   reducedMotion: boolean;
@@ -318,6 +319,7 @@ export const MascotScene = memo(function MascotScene({
   target,
   selection,
   reducedMotion,
+  single = false,
 }: Props) {
   const mount = useRef<HTMLDivElement>(null);
   const state = useRef<{
@@ -406,7 +408,7 @@ export const MascotScene = memo(function MascotScene({
         lastHeight = height;
       }
       figures.forEach((g, i) => {
-        g.position.x = (i === 0 ? -1 : 1) * viewWidth * 0.25;
+        g.position.x = single ? 0 : (i === 0 ? -1 : 1) * viewWidth * 0.25;
       });
       render();
     };
@@ -439,12 +441,12 @@ export const MascotScene = memo(function MascotScene({
       state.current = null;
       previous.current = [];
     };
-  }, []);
+  }, [single]);
   const previous = useRef<string[]>([]);
   useEffect(() => {
     const s = state.current;
     if (!s) return;
-    [target, selection].forEach((combo, i) => {
+    (single ? [target] : [target, selection]).forEach((combo, i) => {
       const key = JSON.stringify(combo);
       if (previous.current[i] === key) return;
       previous.current[i] = key;
@@ -495,12 +497,13 @@ export const MascotScene = memo(function MascotScene({
     selection.colour,
     selection.accessory,
     reducedMotion,
+    single,
   ]);
   return (
     <div className="mascot-canvas" ref={mount} aria-hidden="true">
       {fallback && (
         <div className="scene-fallback">
-          {[target, selection].map((c, i) => (
+          {(single ? [target] : [target, selection]).map((c, i) => (
             <div key={i} style={{ color: COLOURS[c.colour] }}>
               <strong>{OPTIONS.animal[c.animal]}</strong>
               <span>

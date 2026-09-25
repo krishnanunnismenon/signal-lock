@@ -105,7 +105,7 @@ function Icon({
     </svg>
   );
 }
-function Dial({
+export function Dial({
   category,
   value,
   disabled,

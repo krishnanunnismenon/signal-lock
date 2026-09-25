@@ -2,59 +2,50 @@
 
 <!-- impeccable:product-schema 1 -->
 
-## Platform
+## Platform and Stack
 
-web
+Web. Confirmed React, Vite, Three.js, GSAP. Implemented with TypeScript and a local Node.js WebSocket authority. Mobile interactions must remain efficient and accessible.
 
-## Stack
+## Users and Purpose
 
-Confirmed: React, Vite, Three.js, and GSAP. Animation must work efficiently on mobile phones. TypeScript and a local Node.js game authority are proposed implementation defaults, not separately confirmed requirements.
+A hands-on IoT workshop for approximately 60 college students, in Animal, Colour, and Accessory voting groups of 20. A caller sees the audience target and guides an operator who cannot see it. Play teaches messages, shared state, timing, server authority, and debugging.
 
-## Users
+## Current Milestone
 
-Krishnanunni is preparing a hands-on IoT workshop for approximately 60 college students, split into Animal, Colour, and Accessory teams of about 20. A caller sees the audience target and guides an operator who cannot see it.
+The initial solo game is complete. On 2026-09-24 the user confirmed participant mobile UI, three category-specific QR codes, an operator/caller pair leaderboard, host management, and a rehearsal that works with one laptop and optionally one phone. No bulk audience is available for testing.
 
-## Product Purpose
+- A participant scans their physical group's QR, enters a nickname without an account, and claims one of 20 slots. Simulated voters fill unclaimed slots.
+- Phones display the full target and their own team's live vote split, their vote, countdown, and selected-five/locked states.
+- The laptop host manages pair names, starts and pauses turns, provides a participant preview, QR codes, and standings.
+- The dedicated operator screen displays only their selections and timing; its network payload excludes the target and vote information. The caller/projector view sees the target.
+- Only operator/caller pairs appear on the leaderboard. Default five rounds per pair, with a session-wide custom option. Equal scores share a rank. Implementation: 1–20 rounds; rules lock when the first turn starts; completed pairs enter standings and in-progress pairs remain separate.
+- An explicitly labelled rehearsal override lets the host place a tester among the five. It is disabled in workshop mode.
 
-A physical-control matching game that teaches messages, shared state, timing, server authority, and debugging through play.
+## Gameplay Constraints
 
-## Positioning
+- Open voting and live matching, four seconds of restricted voting, four seconds of fully frozen target while operator controls remain active, deadline scoring, results, next round.
+- Five voters per category are selected randomly among subsets capable of changing the current winner. Other votes stay counted. Their revisions replace existing votes with no added weight. If overturning is impossible, preserve weight and select five randomly.
+- One point for each matching category at the deadline, zero to three per round. A workshop pair stops after its configured round count; the host starts the next pair. The independent solo sandbox keeps the original endless loop.
+- Current defaults: 12 seconds open, 3 seconds result. The host can set open voting to 4–60 seconds before the first pair starts. Ties retain the incumbent where possible; otherwise the first tied option wins.
+- Human votes carry between rounds, are labelled as carried, and are never changed by simulated voters. Disconnect preserves the vote and team slot until reconnect or host release.
+- Animal options: fox, frog, owl, panda. Colour: red, blue, green, yellow. Accessory: crown, sunglasses, headphones, bow tie. Initial content, not permanent identity constraints.
 
-The audience changes a composite animal target while the stage operator reproduces its animal, colour, and accessory using three rotary controls. A restricted voting phase preserves uncertainty before a guaranteed frozen finish.
+## Operating Context and Boundaries
 
-## Operating Context
+Local-network phone joining is implemented. Public deployment, persistence across server restarts, physical ESP32 controls, and controlled failure exercises remain later work. Sessions live in memory, including pair rankings. The optional message inspector remains in the solo sandbox; technical details stay off participant screens.
 
-First delivery is a single-laptop gameplay prototype with simulated audience voters and simulated knobs; no other users or hardware are required. The eventual workshop uses a projector, an operator phone, ESP32 encoders, and participant phones. Three category-specific QR codes are confirmed for the later multiplayer version. Public hosting and hardware integration are later work.
+The no-audience rehearsal uses real transport and identities with simulated fill. Testing may create clearly named rehearsal pairs; fabricated rankings must not be presented as actual workshop results. Physical mobile performance, campus network access, and a classroom-scale device load are not yet verified.
 
-## Capabilities and Constraints
+## Brand and Product Principles
 
-- Repeating loop: open voting with live matching; four seconds of restricted voting; four seconds of completely frozen target with matching still enabled; deadline scoring; a result interval; repeat.
-- Five voters per category may revise their existing vote in the restricted phase. Other votes remain counted and frozen.
-- Select the five randomly among combinations capable of changing the winner, based on the current votes. Selection permits a swing; it does not force one. When a swing is impossible, preserve vote strength and use a random selection (stated fallback, not separately confirmed).
-- One current vote per voter; a revision replaces it. No additional vote weight.
-- Score at the deadline, one point per matching category, zero to three.
-- Operator sees their current selections, never the target in the eventual dedicated operator view. A solo prototype must make any target-visible rehearsal explicit.
-- Simple optional message view for teaching; no technical logs on participant screens. Injected failures are deferred.
-- No database, public deployment, QR join service, or real device integration is implied by the prototype.
-- Initial category examples are fox/frog/owl/panda, red/blue/green/yellow, and crown/sunglasses/headphones/bow tie. They are starting content, not immutable requirements.
-- Open-voting duration, result interval, tie handling, simulator behavior, and visual direction remain implementation decisions to document clearly.
+Approved visual identity: **Character press**. Cobalt character fields, yellow game signals, cream controls, condensed display type, and dimensional interchangeable toys. Preserve the creative, distinctive identity; avoid generic dashboard scaffolds.
 
-## Brand Commitments
+- Fun and learning come from the same actions.
+- Hardware reports state; software assigns meaning.
+- Server rules decide timing, permissions, votes and points.
+- Preserve simulation labelling and distinguish test overrides from ordinary gameplay.
+- Prioritize clear touch interactions, large readable targets, meaningful motion, and a quick voting path.
 
-Name: Signal Lock. The user requests a highly creative, distinctive interface that avoids generic AI-generated appearance. No existing visual identity or assets are present.
+## Accessibility and Inclusion
 
-## Evidence on Hand
-
-The user supplied a detailed context transfer and clarified gameplay in this conversation. The project directory was empty. No physical integration, deployment, participant testing, or performance benchmark has been verified.
-
-## Product Principles
-
-- Fun and learning arise from the same actions.
-- Hardware reports control state; game software assigns meaning.
-- Keep deterministic rules in code and distinguish real events from simulated ones.
-- Develop incrementally, first proving playability on one laptop.
-- Preserve visibility and interaction speed while using animation to explain state changes.
-
-## Accessibility & Inclusion
-
-Large projector-readable targets, mobile-friendly controls, text labels alongside colour, keyboard operation for simulated knobs, and reduced-motion behavior. Keep stage participation voluntary in the eventual workshop.
+Text alongside colour; keyboard, pointer and touch parity; visible focus and vote confirmation; reduced-motion behavior; HTML selection labels when WebGL fails. Keep participation on stage voluntary. Every pair receives the same number of scored rounds.

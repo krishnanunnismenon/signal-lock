@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getHostAccess, socketUrl } from "./network";
 import type { Command, Snapshot } from "../shared/game";
 
 export function useGame() {
@@ -10,11 +11,20 @@ export function useGame() {
     let done = false;
     let timer: ReturnType<typeof setTimeout>;
     let retry = 400;
-    const connect = () => {
+    const connect = async () => {
       if (done) return;
-      const ws = new WebSocket(
-        `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/socket`,
-      );
+      let token: string;
+      try {
+        token = (await getHostAccess()).token;
+      } catch {
+        if (!done) {
+          setError("Open solo rehearsal on the host laptop.");
+          timer = setTimeout(connect, 4000);
+        }
+        return;
+      }
+      if (done) return;
+      const ws = new WebSocket(socketUrl("solo", token));
       socket.current = ws;
       ws.onopen = () => {
         setConnected(true);

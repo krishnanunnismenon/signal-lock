@@ -165,6 +165,10 @@ At 700px and below, the stage stacks above the timing region. The yellow region 
 
 Spacing is compact around data and generous around physical controls. The extracted spacing entries are recurring values, not a comprehensive imposed scale. Inspector content changes from two columns to one on phones. The optional inspector follows the game in document flow.
 
+The implemented workshop extension carries this same Character press system into a participant phone, host desk, and dedicated operator surface. The phone orders phase/countdown, full target, four voting pads in a two-column grid, receipt, and fixed two-part bottom navigation. Its canvas is 160px high; the shell is at most 500px wide, with bottom padding and safe-area allowance keeping scrolling content above navigation.
+
+The host places the live stage and pair queue alongside the yellow audience/settings region, with separate QR and leaderboard views. Three labelled category codes use the existing flat colour planes; their columns stack on phones. The operator surface shows one selection figure above the three control stations and omits the target; the original paired comparison remains specific to solo rehearsal.
+
 ## Elevation & Depth
 
 Main surfaces are flat and separated by ink rules. Knobs use a ridged conic bezel, a softly lit radial face, and structural inset/outset shadows. Characters use real Three.js geometry with lighting and a shadow-receiving floor. The error toast is the only floating message surface. Exact shadow strings and motion values live in the sidecar.
@@ -206,6 +210,14 @@ Each category has a name, current choice, knob, and previous/next buttons. The k
 Procedural characters show the target and selection at equal scale. Animal, colour, and accessory labels remain in HTML, with a text fallback when WebGL is unavailable. No shipping raster is used. The central arrow makes the comparison explicit.
 
 Vote strips are narrow, flat segmented bars whose widths derive from actual tallies. Category, leading choice, and count sit outside the strip. Data colours are shared with the character choices; separators keep adjacent segments readable. They are not decorative progress meters.
+
+### Workshop Voting and Navigation
+
+The four vote pads have thin ink borders, tight corners, condensed choice labels, live counts, and a bottom tally strip. Phone pads are at least 96px high. A chosen pad inverts to ink/cream and names “Your vote”; its strip turns yellow. Locked pads remain fully legible, while plain-language status and the receipt explain voting permission and acknowledgement. The bottom Vote/Leaderboard switch uses a yellow active plane and `aria-current`.
+
+### Host Queue and Pair Ranks
+
+The host queue presents operator/caller names, progress, and direct turn actions in ruled rows. Settings expose the equal round count, human/simulation totals, and the labelled rehearsal override. Completed pairs alone enter the leaderboard; active progress is separate. Circular rank badges carry condensed numerals, and every row with `data-rank="1"` receives the same yellow badge, including tied leaders. The default five rounds or session-wide custom count applies equally to every pair.
 
 ## Do's and Don'ts
 
