@@ -66,9 +66,13 @@ If scanning opens an unreachable page, check that the selected address belongs t
 
 On operator and solo screens, use A/D for Animal, J/L for Colour, and Left/Right for Accessory when focus is outside a control. You can also drag knobs, use their step buttons, or use arrow keys on a focused knob. Space starts/pauses the solo sandbox; workshop pause belongs to the host.
 
+## Physical knobs (USB)
+
+The first USB hardware integration is prepared: one-knob ESP32 firmware, a diagnostic monitor, and a local bridge into the workshop operator controls. Run `pnpm knobs --list` to find the board; follow [the hardware bring-up guide](hardware/README.md) for calibration and connection. The exact encoder terminals and board labels must still be confirmed before wiring. Firmware upload and physical testing are pending.
+
 ## Scope and limits
 
-Session data is **in memory**. Restarting the game server clears participants, pair scores, keys, and the room code. A browser refresh does not clear the running session. Export/storage across server restarts, public hosting, physical encoders, and failure exercises are not implemented.
+Session data is **in memory**. Restarting the game server clears participants, pair scores, keys, and the room code. A browser refresh does not clear the running session. Export/storage across server restarts, public hosting, and failure exercises are not implemented. Physical encoder integration is prepared but not yet validated on the hardware.
 
 The phone flow is real multiplayer transport with simulated fill, not a collection of static mockups. Host controls require a server-issued host credential obtainable only from the laptop; participants can change only their own vote. Operator payloads omit the target, tallies, vote events, and result combinations. Pair names and scores are shared room content. The local join and operator links are intended for the workshop, not public distribution.
 

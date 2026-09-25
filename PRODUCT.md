@@ -32,7 +32,7 @@ The initial solo game is complete. On 2026-09-24 the user confirmed participant 
 
 ## Operating Context and Boundaries
 
-Local-network phone joining is implemented. Public deployment, persistence across server restarts, physical ESP32 controls, and controlled failure exercises remain later work. Sessions live in memory, including pair rankings. The optional message inspector remains in the solo sandbox; technical details stay off participant screens.
+Local-network phone joining is implemented. Public deployment, persistence across server restarts, and controlled failure exercises remain later work. On 2026-09-25 the physical knobs arrived and USB was selected for the first integration. ESP32 firmware and a local operator bridge are prepared; exact encoder terminals, board pin labels, firmware compilation/upload, and physical calibration remain to be confirmed. Sessions live in memory, including pair rankings. The optional message inspector remains in the solo sandbox; technical details stay off participant screens.
 
 The no-audience rehearsal uses real transport and identities with simulated fill. Testing may create clearly named rehearsal pairs; fabricated rankings must not be presented as actual workshop results. Physical mobile performance, campus network access, and a classroom-scale device load are not yet verified.
 

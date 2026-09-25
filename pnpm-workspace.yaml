@@ -1,5 +1,6 @@
 # Native helpers used by Vite/tsx and macOS file watching.
 allowBuilds:
+  '@serialport/bindings-cpp': true
   esbuild: true
   fsevents: true
 
