@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { CATEGORIES } from "../shared/game.js";
+import type { Category, Snapshot } from "../shared/game.js";
 import type { RoomCommand, RoomState } from "../shared/room.js";
 
 export interface KnobStep {
@@ -11,12 +11,57 @@ export interface KnobStep {
   delta: -1 | 1;
 }
 
-export function parseKnobLine(line: string): KnobStep | "ready" | null {
+// Firmware channels retain their installed pin order: 22/19, 16/5, 15/21.
+// Correct physical positions and rotation here, without requiring a reflash.
+export const KNOB_CATEGORIES = [
+  "accessory",
+  "colour",
+  "animal",
+] as const satisfies readonly Category[];
+export function mapKnob(step: KnobStep) {
+  return { category: KNOB_CATEGORIES[step.knob], delta: -step.delta as -1 | 1 };
+}
+export type KnobMode = "workshop" | "solo";
+type KnobTurn = Extract<RoomCommand, { type: "turn" }>;
+
+export interface KnobPins {
+  v: 1;
+  type: "pins";
+  knob: number;
+  pinA: number;
+  pinB: number;
+  a: 0 | 1;
+  b: 0 | 1;
+  changesA: number;
+  changesB: number;
+}
+
+export function parseKnobLine(
+  line: string,
+): KnobStep | KnobPins | "ready" | null {
   if (line.length > 256) return null;
   try {
     const value = JSON.parse(line);
     if (!value || value.v !== 1) return null;
     if (value.type === "ready") return "ready";
+    if (value.type === "pins") {
+      const nonnegative = (n: unknown) =>
+        typeof n === "number" && Number.isSafeInteger(n) && n >= 0;
+      if (
+        !nonnegative(value.knob) ||
+        value.knob > 2 ||
+        !nonnegative(value.pinA) ||
+        value.pinA > 39 ||
+        !nonnegative(value.pinB) ||
+        value.pinB > 39 ||
+        ![0, 1].includes(value.a) ||
+        ![0, 1].includes(value.b) ||
+        !nonnegative(value.changesA) ||
+        !nonnegative(value.changesB)
+      )
+        return null;
+      return value;
+    }
     if (
       value.type !== "turn" ||
       typeof value.epoch !== "string" ||
@@ -64,35 +109,59 @@ export class KnobGate {
   epoch: string | null = null;
   private context = "";
   private seq = 0;
-  private state: RoomState | null = null;
+  private turn: Pick<KnobTurn, "round" | "pairId"> | null = null;
+
+  constructor(private readonly mode: KnobMode = "workshop") {}
   private receivedAt = 0;
 
   reset() {
     this.epoch = null;
     this.context = "";
     this.seq = 0;
-    this.state = null;
+    this.turn = null;
   }
 
-  update(state: RoomState, now: number) {
-    const active =
-      state.role === "operator" &&
-      state.activePairId &&
-      !state.game.paused &&
-      ["open", "restricted", "frozen"].includes(state.game.phase);
-    const context = active ? `${state.activePairId}/${state.game.round}` : "";
+  update(state: RoomState | Snapshot, now: number) {
+    let context = "";
+    this.turn = null;
+    if (this.mode === "workshop" && "game" in state) {
+      const active =
+        state.role === "operator" &&
+        state.activePairId &&
+        !state.game.paused &&
+        ["open", "restricted", "frozen"].includes(state.game.phase);
+      if (active) {
+        context = `workshop/${state.activePairId}/${state.game.round}`;
+        this.turn = { round: state.game.round, pairId: state.activePairId };
+      }
+    } else if (this.mode === "solo" && !("game" in state)) {
+      // Match solo's on-screen controls, including testing before Start round.
+      if (!state.paused && state.phase !== "result") {
+        const boundary = [...state.events]
+          .reverse()
+          .find((event) =>
+            [
+              "game.reset",
+              "game.paused",
+              "game.resumed",
+              "round.started",
+            ].includes(event.type),
+          );
+        context = `solo/${state.round}/${boundary?.id ?? 0}`;
+        this.turn = { round: state.round, pairId: null };
+      }
+    }
     if (context !== this.context || now - this.receivedAt > 2000) {
       this.epoch = context ? randomUUID() : null;
       this.seq = 0;
     }
     this.context = context;
-    this.state = state;
     this.receivedAt = now;
   }
 
-  command(step: KnobStep, now: number): RoomCommand | null {
+  command(step: KnobStep, now: number): KnobTurn | null {
     if (
-      !this.state ||
+      !this.turn ||
       !this.epoch ||
       step.epoch !== this.epoch ||
       step.seq <= this.seq ||
@@ -102,10 +171,8 @@ export class KnobGate {
     this.seq = step.seq;
     return {
       type: "turn",
-      category: CATEGORIES[step.knob],
-      delta: step.delta,
-      round: this.state.game.round,
-      pairId: this.state.activePairId,
+      ...mapKnob(step),
+      ...this.turn,
     };
   }
 }

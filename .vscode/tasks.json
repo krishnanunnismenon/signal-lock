@@ -1,0 +1,126 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Signal Lock: Check ESP32 setup",
+      "type": "process",
+      "command": "node",
+      "args": ["hardware/tools.mjs", "status"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Signal Lock: Install ESP32 tools (first time)",
+      "type": "process",
+      "command": "node",
+      "args": ["hardware/tools.mjs", "setup"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Signal Lock: Find USB port",
+      "type": "process",
+      "command": "pnpm",
+      "args": ["knobs", "--list"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Signal Lock: Build firmware",
+      "type": "process",
+      "command": "node",
+      "args": ["hardware/tools.mjs", "build"],
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Signal Lock: Upload firmware",
+      "type": "process",
+      "command": "node",
+      "args": ["hardware/tools.mjs", "upload", "--port", "${input:esp32Port}"],
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Signal Lock: Test knobs",
+      "type": "process",
+      "command": "pnpm",
+      "args": ["knobs", "--port", "${input:esp32Port}", "--monitor"],
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always",
+        "focus": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Signal Lock: Inspect G15 signals (Animal)",
+      "type": "process",
+      "command": "pnpm",
+      "args": ["knobs", "--port", "${input:esp32Port}", "--inspect"],
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always",
+        "focus": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Signal Lock: Run game",
+      "type": "process",
+      "command": "pnpm",
+      "args": ["dev"],
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Signal Lock: Connect knobs to game",
+      "type": "process",
+      "command": "pnpm",
+      "args": ["knobs", "--port", "${input:esp32Port}"],
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always",
+        "focus": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Signal Lock: Connect knobs to solo sandbox",
+      "type": "process",
+      "command": "pnpm",
+      "args": ["knobs", "--port", "${input:esp32Port}", "--solo"],
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always",
+        "focus": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    }
+  ],
+  "options": {
+    "cwd": "${workspaceFolder}"
+  },
+  "inputs": [
+    {
+      "id": "esp32Port",
+      "type": "promptString",
+      "description": "ESP32 USB port from Find USB port (not the Anker hub)",
+      "default": "/dev/cu.usbserial-0001"
+    }
+  ]
+}

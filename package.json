@@ -8,7 +8,11 @@
     "build": "tsc --noEmit && vite build",
     "start": "tsx server/index.ts --production",
     "test": "tsx --test server/*.test.ts",
-    "knobs": "tsx server/knobs.ts"
+    "knobs": "tsx server/knobs.ts",
+    "firmware:status": "node hardware/tools.mjs status",
+    "firmware:setup": "node hardware/tools.mjs setup",
+    "firmware:build": "node hardware/tools.mjs build",
+    "firmware:upload": "node hardware/tools.mjs upload"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",

@@ -629,7 +629,7 @@ export default function App() {
     return (
       <main className="connecting">
         <Icon name="signal" />
-        <h1>Signal Lock</h1>
+        <h1>Kalyani Lock</h1>
         <p>Connecting to your local game server…</p>
         <p className="small-copy">
           Keep the game server running. This page reconnects automatically.

@@ -1,13 +1,24 @@
 import { parseArgs } from "node:util";
 import { SerialPort } from "serialport";
 import { WebSocket } from "ws";
+import type { Snapshot } from "../shared/game.js";
+import { TEAM_NAMES } from "../shared/room.js";
 import type { RoomState } from "../shared/room.js";
-import { KnobGate, KnobLines, parseKnobLine } from "./knob-protocol.js";
+import {
+  KnobGate,
+  KnobLines,
+  parseKnobLine,
+  mapKnob,
+  KNOB_CATEGORIES,
+  type KnobMode,
+} from "./knob-protocol.js";
 
 const { values } = parseArgs({
   options: {
     list: { type: "boolean" },
     monitor: { type: "boolean" },
+    inspect: { type: "boolean" },
+    solo: { type: "boolean" },
     port: { type: "string" },
     server: { type: "string", default: "http://127.0.0.1:3107" },
     help: { type: "boolean" },
@@ -15,7 +26,7 @@ const { values } = parseArgs({
 });
 if (values.help) {
   console.log(
-    "pnpm knobs --list\npnpm knobs --port /dev/cu.YOUR_DEVICE --monitor\npnpm knobs --port /dev/cu.YOUR_DEVICE\nOptional: --server http://127.0.0.1:3107",
+    "pnpm knobs --list\npnpm knobs --port /dev/cu.YOUR_DEVICE --monitor\npnpm knobs --port /dev/cu.YOUR_DEVICE --inspect\npnpm knobs --port /dev/cu.YOUR_DEVICE\npnpm knobs --port /dev/cu.YOUR_DEVICE --solo\nOptional: --server http://127.0.0.1:3107",
   );
 } else if (values.list) {
   const ports = await SerialPort.list();
@@ -34,15 +45,22 @@ if (values.help) {
   console.error("Choose the ESP32 port explicitly. Run: pnpm knobs --list");
   process.exitCode = 1;
 } else {
-  await run(values.port, values.server!, Boolean(values.monitor));
+  await run(
+    values.port,
+    values.server!,
+    Boolean(values.monitor || values.inspect),
+    Boolean(values.inspect),
+    values.solo ? "solo" : "workshop",
+  );
 }
 
-async function operatorKey(base: URL): Promise<string> {
+async function connectionKey(base: URL, mode: KnobMode): Promise<string> {
   const response = await fetch(new URL("/api/host", base), {
     signal: AbortSignal.timeout(3000),
   });
   if (!response.ok) throw Error("Cannot read the local host session.");
   const { token } = (await response.json()) as { token: string };
+  if (mode === "solo") return token;
   return new Promise((resolve, reject) => {
     const url = new URL("/socket", base);
     url.protocol = "ws:";
@@ -77,7 +95,13 @@ async function operatorKey(base: URL): Promise<string> {
   });
 }
 
-async function run(path: string, address: string, monitor: boolean) {
+async function run(
+  path: string,
+  address: string,
+  monitor: boolean,
+  inspect: boolean,
+  mode: KnobMode,
+) {
   const base = new URL(address);
   if (
     base.protocol !== "http:" ||
@@ -85,7 +109,7 @@ async function run(path: string, address: string, monitor: boolean) {
   )
     throw Error("The USB bridge connects only to the game on this laptop.");
   const serial = new SerialPort({ path, baudRate: 115200, autoOpen: false });
-  const gate = new KnobGate();
+  const gate = new KnobGate(mode);
   const lines = new KnobLines();
   let socket: WebSocket | null = null;
   let stopped = false;
@@ -93,9 +117,12 @@ async function run(path: string, address: string, monitor: boolean) {
   let previousArm = "";
   let diagnosticSeq = 0;
   let lastStateAt = 0;
+  let receivedPins = false;
+  let inspectStarted = 0;
+  let warnedFirmware = false;
   const arm = (force = false) => {
     const command = monitor
-      ? "ARM monitor\n"
+      ? `ARM monitor\n${inspect ? "WATCH" : "QUIET"}\n`
       : gate.epoch
         ? `ARM ${gate.epoch}\n`
         : "STOP\n";
@@ -122,11 +149,11 @@ async function run(path: string, address: string, monitor: boolean) {
     if (monitor || stopped || connecting || socket) return;
     connecting = true;
     try {
-      const key = await operatorKey(base);
+      const key = await connectionKey(base, mode);
       if (stopped) return;
       const url = new URL("/socket", base);
       url.protocol = "ws:";
-      url.searchParams.set("role", "operator");
+      url.searchParams.set("role", mode === "solo" ? "solo" : "operator");
       url.searchParams.set("token", key);
       const ws = new WebSocket(url, { handshakeTimeout: 3000 });
       socket = ws;
@@ -134,7 +161,7 @@ async function run(path: string, address: string, monitor: boolean) {
         try {
           const message = JSON.parse(data.toString());
           if (message.type === "state") {
-            gate.update(message.state as RoomState, Date.now());
+            gate.update(message.state as RoomState | Snapshot, Date.now());
             lastStateAt = Date.now();
             arm();
           } else if (message.type === "error")
@@ -146,7 +173,9 @@ async function run(path: string, address: string, monitor: boolean) {
       });
       ws.on("open", () =>
         console.log(
-          "Game connected. Start a pair on the host screen to enable the knobs.",
+          mode === "solo"
+            ? "Solo connected. Open /solo; knobs work before starting and during play."
+            : "Workshop connected. Open the operator screen and start a pair on the host to enable the knobs.",
         ),
       );
       ws.on("error", () => ws.close());
@@ -172,11 +201,19 @@ async function run(path: string, address: string, monitor: boolean) {
         gate.reset();
         console.log("ESP32 firmware ready.");
         arm(true);
+      } else if (step?.type === "pins") {
+        // Diagnostic readings are never sent as game commands.
+        if (inspect) {
+          receivedPins = true;
+          console.log(
+            `${TEAM_NAMES[KNOB_CATEGORIES[step.knob]]}: yellow G${step.pinA}=${step.a ? "HIGH" : "LOW"} (changes ${step.changesA}), orange G${step.pinB}=${step.b ? "HIGH" : "LOW"} (changes ${step.changesB})`,
+          );
+        }
       } else if (step) {
         if (monitor && step.epoch === "monitor" && step.seq > diagnosticSeq) {
           diagnosticSeq = step.seq;
           console.log(
-            `${["Animal", "Colour", "Accessory"][step.knob]} ${step.delta > 0 ? "+1" : "−1"}`,
+            `${TEAM_NAMES[KNOB_CATEGORIES[step.knob]]} ${mapKnob(step).delta > 0 ? "+1" : "−1"}`,
           );
         } else if (!monitor) {
           const command = gate.command(step, Date.now());
@@ -199,6 +236,18 @@ async function run(path: string, address: string, monitor: boolean) {
     stop("USB disconnected. Reconnect, then run the bridge again."),
   );
   const timer = setInterval(() => {
+    if (
+      inspect &&
+      inspectStarted &&
+      !receivedPins &&
+      !warnedFirmware &&
+      Date.now() - inspectStarted > 8000
+    ) {
+      warnedFirmware = true;
+      console.log(
+        "No pin diagnostics received. Upload the updated firmware, then run this task again.",
+      );
+    }
     if (!monitor && socket && lastStateAt && Date.now() - lastStateAt > 2000) {
       gate.reset();
       socket.terminate();
@@ -216,10 +265,13 @@ async function run(path: string, address: string, monitor: boolean) {
       return;
     }
     console.log(
-      monitor
-        ? "USB monitor ready. Turn one knob; each click should print one step."
-        : "USB open. Waiting for the game and ESP32 firmware…",
+      inspect
+        ? "G15/G21 diagnostic ready (now Animal). Turn that knob slowly for a full revolution. Both change counters should increase; they are electrical transitions, not click counts."
+        : monitor
+          ? "USB monitor ready. Turn one knob; each click should print one step."
+          : "USB open. Waiting for the game and ESP32 firmware…",
     );
+    inspectStarted = Date.now();
     arm(true);
     void connect();
   });

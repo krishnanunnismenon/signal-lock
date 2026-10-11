@@ -68,7 +68,9 @@ On operator and solo screens, use A/D for Animal, J/L for Colour, and Left/Right
 
 ## Physical knobs (USB)
 
-The first USB hardware integration is prepared: one-knob ESP32 firmware, a diagnostic monitor, and a local bridge into the workshop operator controls. Run `pnpm knobs --list` to find the board; follow [the hardware bring-up guide](hardware/README.md) for calibration and connection. The exact encoder terminals and board labels must still be confirmed before wiring. Firmware upload and physical testing are pending.
+You can edit, build, upload and test the controller from **VS Code**. Open the project folder and use **Cmd+Shift+P → Tasks: Run Task → Signal Lock: Check ESP32 setup**. The following tasks cover tool installation, firmware upload, knob monitoring and the game bridge. See [the VS Code walkthrough](hardware/README.md#work-entirely-in-vs-code-recommended).
+
+The USB hardware integration is prepared: ESP32 firmware for all three knobs, a diagnostic monitor, and a local bridge into the workshop operator controls. The configured yellow/orange pairs are Animal G15/G21, Colour G16/G5, Accessory G22/G19; all common terminals share GND. Keep the working wiring: the laptop bridge swaps Animal/Accessory and reverses direction, without a firmware upload. Run `pnpm knobs --list` to find the board; follow [the hardware bring-up guide](hardware/README.md) for installation, upload and calibration. ESP32 tools are installed and the diagnostic firmware compiled. The user confirmed all three knobs working after the G2-to-G15 move. For the solo sandbox, stop the workshop bridge and run `pnpm knobs --port /dev/cu.usbserial-0001 --solo`, or use the **Connect knobs to solo sandbox** VS Code task. Restart the bridge to pick up the new position/direction mapping.
 
 ## Scope and limits
 

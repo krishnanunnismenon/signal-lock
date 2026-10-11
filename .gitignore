@@ -3,3 +3,5 @@ dist/
 .DS_Store
 *.log
 .impeccable/review/
+.hardware-build/
+hardware/signal-lock/build
